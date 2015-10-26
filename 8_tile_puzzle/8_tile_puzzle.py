@@ -1,3 +1,4 @@
+from collections import deque
 import random
 
 CORRECT_TILES = (
@@ -8,7 +9,7 @@ CORRECT_TILES = (
 
 
 class State:
-    def __init__(self, tiles, parent):
+    def __init__(self, tiles, parent=None):
         self.tiles = tiles
         self.parent = parent
         self.x_pos = tiles.index('x')
@@ -46,11 +47,65 @@ class State:
                 s += '\n'
         return s
 
-s = State(CORRECT_TILES, '')
-for c in s.children():
-    print(c)
+    def hash(self):
+        return hash(self.tiles)
 
 
+class Puzzle:
+    def __init__(self, root):
+        self.root = root
+
+    def solve(self):
+        q = deque()
+        visited = set()
+        q.append(self.root)
+
+        count = 0
+
+        while q:
+            count +=1
+            curr = q.popleft()
+
+            if curr.tiles == CORRECT_TILES:
+                print('Solved in %s steps' % count)
+                return self._reconstruct_path(curr)
+
+            for c in curr.children():
+                count +=1
+                if c.hash() not in visited:
+                    visited.add(c.hash())
+                    c.parent = curr
+                    q.append(c)
+
+    def _reconstruct_path(self, final):
+        path = []
+        while final.parent:
+            path.append(final)
+            final = final.parent
+        path.append(final)
+        return path
+
+TEST_TILES_1 = (
+    '3', '8', '4',
+    '2', '6', '1',
+    '7', '5', 'x'
+)
+
+TEST_TILES_2 = (
+    '1', '2', 'x',
+    '3', '4', '5',
+    '6', '7', '8'
+)
+
+s = State(TEST_TILES_1)
+p = Puzzle(s)
+path = p.solve()
+
+c = 0
+while path:
+    print('Step: %s' % c)
+    c += 1
+    print(path.pop())
 
 
 
