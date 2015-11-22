@@ -110,7 +110,7 @@ class Puzzle:
                     if not c.open:
                         heapq.heappush(opened, c)
                         # this is set as property for the sake of speed
-                        # the check "if not c.open" can be replaced with "if c not in open"
+                        # the check "if not c.open" can be replaced with "if c not in opened"
                         c.open = True
 
 if __name__ == '__main__':
